@@ -1,3 +1,4 @@
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -22,6 +23,20 @@ const Navbar = () => {
         </ul>
 
         {/* user Profile */}
+        {/* Clerk Auth Buttons */}
+      <div className="flex items-center gap-4">
+        <SignedIn>
+          <UserButton afterSignOutUrl="/" />
+        </SignedIn>
+        <SignedOut>
+          <Link
+            href="/sign-in"
+            className="text-sm font-medium text-blue-600 hover:underline"
+          >
+            Sign In
+          </Link>
+        </SignedOut>
+      </div>
     </div>
   )
 }

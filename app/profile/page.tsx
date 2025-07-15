@@ -2,8 +2,11 @@ import CompletedLessonsTable from "@/components/profile/CompletedLessonsTable"
 import ProfileInfoBox from "@/components/profile/ProfileInfoBox"
 import { User } from "lucide-react"
 // import Image from "next/image"
+import { auth } from "@clerk/nextjs/server"
 
-const Profile = () => {
+const Profile = async () => {
+  const user = await auth()
+  if (!user.userId) return console.log("not auth")
   return (
     <div className="container space-y-15">
 
