@@ -26,12 +26,12 @@ const Navbar = () => {
         {/* Clerk Auth Buttons */}
       <div className="flex items-center gap-4">
         <SignedIn>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton  afterSignOutUrl="/" />
         </SignedIn>
         <SignedOut>
           <Link
             href="/sign-in"
-            className="text-sm font-medium text-blue-600 hover:underline"
+            className="text-sm font-medium rounded-bg hover:opacity-75 transition-all duration-300"
           >
             Sign In
           </Link>
