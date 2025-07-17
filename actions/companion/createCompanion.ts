@@ -17,7 +17,7 @@ export async function createNewCompanion (formData: companionProps): Promise<{su
     await prisma.companions.create({
         data: {
             name: formData.name,
-            subject: formData.subject,
+            subject: formData.subject.toUpperCase(),
             topic: formData.topic,
             voice: formData.voice,
             style: formData.style,

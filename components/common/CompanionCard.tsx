@@ -1,14 +1,15 @@
 import {Bookmark, Clock } from "lucide-react"
 import { Button } from "../ui/button"
 import { Companions } from "@prisma/client"
+import Link from "next/link"
 
 const CompanionCard = ({companion}: {companion: Companions}) => {
   return (
     <div className="border-rounded flex flex-col justify-around space-y-3 px-6 py-4 min-h-[280px]">
         <div className="flex-between">
-            <h1 className="rounded-bg text-[14px]">{companion.subject}</h1>
-            <div className="bg-black rounded-full text-white p-2">
-                <Bookmark className="cursor-pointer" size={20}/>
+            <h1 className="rounded-bg text-[13px] font-semibold">{companion.subject}</h1>
+            <div className="bg-black rounded-full text-white p-2 cursor-pointer btn-hover">
+                <Bookmark className="" size={20}/>
             </div>
         </div>
 
@@ -22,7 +23,9 @@ const CompanionCard = ({companion}: {companion: Companions}) => {
         </div>
 
         
-        <Button className="w-full cursor-pointer bg-orange-500 transition-all duration-300">Lunch Lesson</Button>
+        <Button className="w-full cursor-pointer btn-hover bg-orange-500 transition-all duration-300">
+            <Link href={`/companion-library/${companion.id}`}>Lunch Companion</Link>
+        </Button>
     </div>
   )
 }

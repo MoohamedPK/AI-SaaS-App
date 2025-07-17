@@ -138,6 +138,10 @@
     @apply hover:text-orange-500 transition-colors duration-300
   }
 
+  .btn-hover {
+    @apply transition-all duration-300 hover:scale-98
+  }
+
   .border-rounded {
     @apply border-2 border-black rounded-[22px]
   }

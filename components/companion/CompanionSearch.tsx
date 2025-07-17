@@ -1,11 +1,11 @@
 import { Search } from "lucide-react"
 import { Input } from "../ui/input"
 
-const CompanionSearch = () => {
+const CompanionSearch = ({setSearchQuery}: {setSearchQuery: (query:string) => void}) => {
   return (
     <div className="flex items-center px-3">
         <Search size={18}/>
-        <Input placeholder="search your companion" type="text" className=" border-none"/>
+        <Input onChange={(e) => setSearchQuery(e.target.value)} placeholder="search your companion" type="text" className=" border-none"/>
     </div>
   )
 }
