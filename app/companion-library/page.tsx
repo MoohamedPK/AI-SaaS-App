@@ -12,13 +12,13 @@ const CompanionLibrary = () => {
 
   const [companions, setCompanions] = useState<Companions[]>()
   const [searchQuery, setSearchQuery] = useState<string>(""); 
+  const [selectedSubject, setSelectedSubject] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const getData = async () => {
 
       try {
-
         setIsLoading(true)
         
         const data = await fetchCompanions();
@@ -33,11 +33,16 @@ const CompanionLibrary = () => {
     getData()
   }, [])
 
-  const filteredCompanions = companions?.filter(companion =>
+  const filteredCompanions = companions?.filter((companion) =>
+  // Match search query
+  (searchQuery === "" ||
     companion.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    companion.topic.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    companion.subject.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+    companion.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    companion.subject.toLowerCase().includes(searchQuery.toLowerCase()))
+  &&
+  // Match subject filter
+  (selectedSubject === "all" || selectedSubject === ""  || companion.subject === selectedSubject)
+)
 
   const subjects = companions?.map((comp) => comp.subject)
   const filtredSubjects = [...new Set(subjects)]
@@ -49,7 +54,7 @@ const CompanionLibrary = () => {
         <h1 className="font-bold text-2xl">Companion Library</h1>
         <div className="flex-items">
           <CompanionSearch setSearchQuery={setSearchQuery}/>
-          <SubjectDropdown subjects={filtredSubjects}/>
+          <SubjectDropdown subjects={filtredSubjects} setSelectedSubject={setSelectedSubject}/>
         </div>
       </nav>
 
