@@ -26,7 +26,7 @@ const Navbar = () => {
         {/* Clerk Auth Buttons */}
       <div className="flex items-center gap-4">
         <SignedIn>
-          <UserButton  afterSignOutUrl="/" />
+          <UserButton afterSignOutUrl="/" />
         </SignedIn>
         <SignedOut>
           <Link

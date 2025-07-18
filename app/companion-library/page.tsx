@@ -4,8 +4,11 @@ import { fetchCompanions } from "@/actions/companion/fetchCompanions"
 import CompanionCard from "@/components/common/CompanionCard"
 import CompanionSearch from "@/components/companion/CompanionSearch"
 import SubjectDropdown from "@/components/companion/SubjectDropdown"
+import { Button } from "@/components/ui/button"
 import CardSkeleton from "@/components/ui/CardSkeleton"
 import { Companions } from "@prisma/client"
+import { Plus } from "lucide-react"
+import Link from "next/link"
 import { useEffect, useState } from "react"
 
 const CompanionLibrary = () => {
@@ -41,11 +44,8 @@ const CompanionLibrary = () => {
     companion.subject.toLowerCase().includes(searchQuery.toLowerCase()))
   &&
   // Match subject filter
-  (selectedSubject === "all" || selectedSubject === ""  || companion.subject === selectedSubject)
+  (selectedSubject === "all" || selectedSubject === ""  || companion.subject.toLowerCase() === selectedSubject.toLowerCase())
 )
-
-  const subjects = companions?.map((comp) => comp.subject)
-  const filtredSubjects = [...new Set(subjects)]
 
   return (
     <main className="container flex flex-col space-y-12">
@@ -54,9 +54,16 @@ const CompanionLibrary = () => {
         <h1 className="font-bold text-2xl">Companion Library</h1>
         <div className="flex-items">
           <CompanionSearch setSearchQuery={setSearchQuery}/>
-          <SubjectDropdown subjects={filtredSubjects} setSelectedSubject={setSelectedSubject}/>
+          <SubjectDropdown setSelectedSubject={setSelectedSubject}/>
         </div>
       </nav>
+      
+      <div className="flex justify-end">
+        <Button className="flex-items !space-x-2 btn-hover">
+          <Plus/>
+          <Link href={'/companion-library/new'}>Add New Companion</Link>
+        </Button>
+      </div>
 
       <div className="flex-items !space-x-2 font-semibold">
         {searchQuery && (

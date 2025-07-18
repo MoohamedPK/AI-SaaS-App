@@ -7,3 +7,10 @@ export type companionProps = {
     voice : string,
     duration : number,
 }
+
+export enum CallStatus {
+    INACTIVE = "INACTIVE",
+    CONNECTING = "CONNECTING",
+    ACTIVE = "ACTIVE",
+    FINISHED = "FINISHED"
+}

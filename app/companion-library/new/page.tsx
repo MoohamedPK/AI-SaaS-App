@@ -1,6 +1,12 @@
 import CompanionForm from "@/components/companion/CompanionForm"
+import { auth } from "@clerk/nextjs/server"
+import { redirect } from "next/navigation"
 
-const NewCompanion = () => {
+const NewCompanion = async () => {
+
+  const {userId} = await auth()
+
+  if (!userId) return redirect("/sign-in")
   return (
     <div className="container space-y-8">
 

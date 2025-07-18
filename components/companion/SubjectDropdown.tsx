@@ -10,7 +10,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-const SubjectDropdown = ({subjects, setSelectedSubject}: {subjects: string[], setSelectedSubject: (value: string) => void}) => {
+import { subjects } from "@/lib/utils"
+
+const SubjectDropdown = ({setSelectedSubject}: {setSelectedSubject: (value: string) => void}) => {
   return (
     <Select onValueChange={(value) => setSelectedSubject(value)}>
       <SelectTrigger className="w-[180px] border-black text-black">
@@ -20,7 +22,7 @@ const SubjectDropdown = ({subjects, setSelectedSubject}: {subjects: string[], se
         <SelectGroup>
           <SelectLabel>Subjects</SelectLabel>
           <SelectItem className="hover-effect block cursor-pointer capitalize font-semibold" value="all">All</SelectItem>
-          {subjects.map((subject) => <SelectItem key={subject} className="hover-effect block cursor-pointer capitalize font-semibold" value={subject}>{subject.toLowerCase()}</SelectItem>)}
+          {subjects.map((subject) => <SelectItem key={subject.name} className="hover-effect block cursor-pointer capitalize font-semibold" value={subject.name}>{subject.name.toLowerCase()}</SelectItem>)}
           
           
         </SelectGroup>

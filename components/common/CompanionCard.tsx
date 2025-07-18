@@ -2,10 +2,15 @@ import {Bookmark, Clock } from "lucide-react"
 import { Button } from "../ui/button"
 import { Companions } from "@prisma/client"
 import Link from "next/link"
+import { subjects } from "@/lib/utils"
+
 
 const CompanionCard = ({companion}: {companion: Companions}) => {
+
+    const subjectColor = subjects.find((subject) => subject.name.toLowerCase() === companion.subject.toLowerCase())
+
   return (
-    <div className="border-rounded flex flex-col justify-around space-y-3 px-6 py-4 min-h-[280px]">
+    <div className="border-rounded flex flex-col justify-around space-y-3 px-6 py-4 min-h-[280px] " style={{backgroundColor: subjectColor?.color || ""}}>
         <div className="flex-between">
             <h1 className="rounded-bg text-[13px] font-semibold">{companion.subject}</h1>
             <div className="bg-black rounded-full text-white p-2 cursor-pointer btn-hover">
@@ -23,9 +28,11 @@ const CompanionCard = ({companion}: {companion: Companions}) => {
         </div>
 
         
-        <Button className="w-full cursor-pointer btn-hover bg-orange-500 transition-all duration-300">
-            <Link href={`/companion-library/${companion.id}`}>Lunch Companion</Link>
-        </Button>
+        <Link href={`/companion-library/${companion.id}`}>
+            <Button className="w-full cursor-pointer btn-hover bg-orange-500 transition-all duration-300">
+                Lunch Companion
+            </Button>
+            </Link>
     </div>
   )
 }

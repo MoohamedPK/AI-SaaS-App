@@ -1,22 +1,25 @@
 import { fetchCompanionById } from "@/actions/companion/fetchCompanionById"
 import BackButton from "@/components/common/BackButton"
-import AgentBox from "@/components/companion/AgentBox"
-import LessonControlle from "@/components/companion/LessonControlle"
+import AgentComponent from "@/components/companion/AgentComponent"
+import { subjects } from "@/lib/utils"
 import { Companions } from "@prisma/client"
-import { BottleWine } from "lucide-react"
 
 const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
 
   const companionId = ((await params).id)
   const companion = await fetchCompanionById(companionId) as Companions
 
+  // Find the icon based on subject
+  const subjectData = subjects.find((s) => s.name === companion.subject);
+  const iconName = subjectData?.iconName;
+  const color = subjectData?.color || "";
 
   return (
     <main className="container space-y-12">
       <BackButton/>
-      <section className=" border-rounded px-7 py-10 flex-between ">
+      <section className=" border-rounded px-7 py-10 flex-between " style={{backgroundColor: color}}>
         <div className="flex-items">
-          <BottleWine size={40}/>
+          {/* {Icon && <iconName size={32} className="text-primary" />} */}
 
           <div className="space-y-2">
             <div className="flex-items">
@@ -31,20 +34,7 @@ const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
         <p className="font-semibold text-lg">{companion.duration} mins</p>
       </section>
 
-
-      <section className="grid grid-cols-4 gap-6">
-        <div className="col-span-3 space-y-8">
-          <AgentBox/>
-
-          <div className="min-w-full text-center">
-            <p>translation</p>
-          </div>
-        </div>
-
-        <div className="col-span-1">
-          <LessonControlle/>
-        </div>
-      </section>
+      <AgentComponent iconName={iconName}/>
 
     </main>
   )
