@@ -3,10 +3,12 @@
 import { vapi } from "@/vapi.sdk";
 import { CallStatus } from "@/ts.definitions/types";
 import { useEffect, useRef, useState } from "react";
-import { LucideIcon, Mic, Repeat, User } from "lucide-react";
+import { LucideIcon, Mic, MicOff, Repeat, User } from "lucide-react";
 import { Button } from "../ui/button";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import soundwaves from "@/public/Sound Wave Loop.json"
+import { useUser } from "@clerk/nextjs";
+
 import {
     Calculator,
     Atom,
@@ -19,7 +21,9 @@ import {
     Paintbrush,
     Music
     } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Companions } from "@prisma/client";
+import { assistantConfig, cn } from "@/lib/utils";
 
     const iconMap: Record<string, LucideIcon> = {
     Calculator,
@@ -34,11 +38,15 @@ import { cn } from "@/lib/utils";
     Music,
     };
 
-const AgentComponent = ({iconName}: {iconName?: string}) => {
+const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?: string}) => {
 
+    const {topic, style, subject, voice} = companion
+    console.log(voice)
+    const {user} = useUser()
     const Icon = iconMap[iconName ?? ""];
-    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.ACTIVE);
-    const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+    const [isSpeaking, setIsSpeaking] = useState<boolean>(true);
+    const [isMuted, setIsMuted] = useState<boolean>(false)
 
     const lottieRef = useRef<LottieRefCurrentProps>(null)
 
@@ -78,39 +86,103 @@ const AgentComponent = ({iconName}: {iconName?: string}) => {
             vapi.off("speech-end", onSpeakingEnd);
         }
 
-
     }, [])
+
+    const toggleMicrophone = () => {
+      if (callStatus === CallStatus.ACTIVE) {
+
+        const isMuted = vapi.isMuted()
+        vapi.setMuted(!isMuted)
+        setIsMuted(!isMuted)
+      }
+    }
+
+    const handleDisconnect = () => {
+        vapi.stop()
+    }
+
+    const handleCall = async () => {
+      
+        setCallStatus(CallStatus.CONNECTING);
+
+        const assistantOverrides = {
+            variableValues:  {subject, topic, style},
+            
+        }
+        
+        vapi.start(assistantConfig, assistantOverrides);
+    }
 
   return (
     <section className="grid grid-cols-4 gap-6">
-        <div className="col-span-3 space-y-8">
-            <div className={cn("border-rounded !border-orange-500 p-8 flex flex-col justify-center items-center min-h-full", callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED ? "opacity-100" : "opacity-0",  callStatus === CallStatus.CONNECTING && "opacity-100 animate-pulse")}>
-                {Icon && <Icon size={62} className="text-primary" />}
-                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
-            </div>
-
-            <div className={cn("transition-all duration-100", callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0")}>
-                <Lottie lottieRef={lottieRef} animationData={soundwaves} autoPlay={false} className="bg-black"/>
-            </div>
-
-          <div className="min-w-full text-center">
-            <p>translation</p>
-          </div>
+      {/* Left section */}
+      <div className="col-span-3 space-y-8 relative">
+        {/* Call State Display */}
+        <div
+          className={cn(
+            "border-rounded !border-orange-500 p-8 flex flex-col justify-center items-center min-h-full transition-opacity duration-300",
+            callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED
+              ? "opacity-100"
+              : "opacity-0",
+            callStatus === CallStatus.CONNECTING && "opacity-100 animate-pulse"
+          )}
+        >
+          {Icon && <Icon size={62} className="text-primary" />}
+          <p className="mt-4 text-center text-sm text-zinc-700">
+            Waiting for the companion to speak...
+          </p>
         </div>
 
-        <div className="col-span-1">
-            <div>
-                <div className="space-y-5"> 
-                    <div className="user center-items p-8 border-rounded">
-                        {/* user image  */}
-                        <User size={50} className="bg-neutral-400 rounded-full"/>
-                        <p className="text-lg font-bold">user name</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                        <Button  className="mic border-rounded center-items py-3 min-h-full cursor-pointer">
-                            <Mic size={28}/>
-                            <p>Turn off mic</p>
+        {/* Soundwave animation (active when speaking) */}
+        <div
+          className={cn(
+            "transition-all duration-200 size-60 absolute",
+            callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <Lottie
+            lottieRef={lottieRef}
+            animationData={soundwaves}
+            autoPlay={false}
+            className="bg-black w-full"
+          />
+        </div>
+
+        {/* Translation section */}
+
+        <div className="min-w-full text-center">
+          <p className="text-muted-foreground text-sm italic overflow-y-hidden">Translation appears here...</p>
+          <div className=""/>
+        </div>
+      </div>
+
+      {/* Right panel (User controls) */}
+      <div className="col-span-1">
+        <div className="space-y-5">
+          {/* User info */}
+          <div className="center-items p-8 border-rounded border">
+            {user?.hasImage ? (
+                <Image src={user.imageUrl} width={100} height={100} className="rounded-xl" alt="user img"/>
+            ) : (
+                <User size={50} className="bg-neutral-400 rounded-full"/>
+            ) }
+            <p className="text-lg font-bold mt-2">{user?.fullName}</p>
+          </div>
+
+          {/* Control buttons */}
+          <div className="grid grid-cols-2 gap-3">
+                        <Button onClick={toggleMicrophone}  className={cn("mic border-rounded center-items py-3 min-h-full cursor-pointer", callStatus !== CallStatus.ACTIVE ? "cursor-not-allowed" : "") }>
+                            {isMuted ? (
+                                <>
+                                    <MicOff size={28}/>
+                                    <p>Turn On mic</p>
+                                </>
+                            ) : (
+                                <>
+                                    <Mic size={28}/>
+                                    <p>Turn Off mic</p>
+                                </>
+                            )}
                         </Button>
 
                         <Button className="repeat border-rounded center-items py-3 h-full cursor-pointer">
@@ -119,12 +191,18 @@ const AgentComponent = ({iconName}: {iconName?: string}) => {
                         </Button>
                     </div>
 
-                    <Button className="w-full bg-orange-500 cursor-pointer">End Lesson</Button>
-                </div>
+          {/* End lesson */}
+          <Button
 
-            </div>
+            onClick={callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall}
+            className={cn("w-full bg-zinc-800 hover:opacity-95 text-white cursor-pointer", callStatus === CallStatus.ACTIVE ? "bg-red-700" : "bg-zinc-800", callStatus === CallStatus.CONNECTING ? "animate-pulse bg-green-700" : "")}>
+            {callStatus === CallStatus.ACTIVE ? "End Session" : callStatus === CallStatus.CONNECTING ? "Connecting ..." : "Start Session"}
+          </Button>
         </div>
-      </section>
+      </div>
+
+
+    </section>
   )
 }
 

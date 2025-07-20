@@ -9,7 +9,7 @@ const Links = [{name: "Home", href: "/"}, {name: "Learning Companions", href: "/
 
 const Navbar = () => {
   return (
-    <div className="container flex-between mb-5">
+    <div className="container flex-between ">
         <div className="logo">
             <Image src={'/public/logo.svg'} alt="logo" width={50} height={50}/>
         </div>

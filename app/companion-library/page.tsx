@@ -50,20 +50,25 @@ const CompanionLibrary = () => {
   return (
     <main className="container flex flex-col space-y-12">
 
-      <nav className="flex-between ">
+      <nav className="flex-between">
         <h1 className="font-bold text-2xl">Companion Library</h1>
         <div className="flex-items">
           <CompanionSearch setSearchQuery={setSearchQuery}/>
+        </div>
+
+        <div className="flex-items">
           <SubjectDropdown setSelectedSubject={setSelectedSubject}/>
+
+          <Link href={'/companion-library/new'}>
+            <Button className="flex-items !space-x-2 btn-hover cursor-pointer">
+              <Plus/>
+              Add New Companion
+            </Button>
+          </Link>
         </div>
       </nav>
       
-      <div className="flex justify-end">
-        <Button className="flex-items !space-x-2 btn-hover">
-          <Plus/>
-          <Link href={'/companion-library/new'}>Add New Companion</Link>
-        </Button>
-      </div>
+        
 
       <div className="flex-items !space-x-2 font-semibold">
         {searchQuery && (

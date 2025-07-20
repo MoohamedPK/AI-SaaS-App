@@ -20,7 +20,7 @@ export async function createNewCompanion (formData: companionProps): Promise<{su
             subject: formData.subject,
             topic: formData.topic,
             voice: formData.voice,
-            style: formData.style,
+            style: formData.style.toLowerCase(),
             duration: Number(formData.duration),
         }
     })

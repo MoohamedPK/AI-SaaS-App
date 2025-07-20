@@ -18,17 +18,23 @@ import { useState } from "react"
 import Loading from "../ui/Loading"
 import { toast } from "sonner"
 import { redirect } from "next/navigation"
-import { subjects } from "@/lib/utils"
+import { subjects, voices } from "@/constants/index"
 
 const CompanionForm = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const {register, handleSubmit, control} = useForm<companionProps>();
+  const {register, handleSubmit, control, watch} = useForm<companionProps>();
+
+  const selectedVoiceGender = watch("voice");
 
   const onSubmit:SubmitHandler<companionProps> = async (formData) => {
     try {
       setIsLoading(true)
-      await createNewCompanion(formData);
+
+      const voiceId = voices[selectedVoiceGender?.toLowerCase() as "male" | "female"]
+
+      const finaleData = {...formData, voice: voiceId}
+      await createNewCompanion(finaleData);
     } catch (error) {
       console.log(error)
     } finally {

@@ -1,7 +1,7 @@
 import { fetchCompanionById } from "@/actions/companion/fetchCompanionById"
 import BackButton from "@/components/common/BackButton"
 import AgentComponent from "@/components/companion/AgentComponent"
-import { subjects } from "@/lib/utils"
+import { subjects } from "@/constants/index"
 import { Companions } from "@prisma/client"
 
 const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
@@ -17,8 +17,8 @@ const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
   return (
     <main className="container space-y-12">
       <BackButton/>
-      <section className=" border-rounded px-7 py-10 flex-between " style={{backgroundColor: color}}>
-        <div className="flex-items">
+      <section className="rounded-lg px-7 py-10 flex-between shadow-2xl" style={{backgroundColor: color}}>
+        <div className="flex-items ">
           {/* {Icon && <iconName size={32} className="text-primary" />} */}
 
           <div className="space-y-2">
@@ -34,7 +34,7 @@ const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
         <p className="font-semibold text-lg">{companion.duration} mins</p>
       </section>
 
-      <AgentComponent iconName={iconName}/>
+      <AgentComponent companion= {companion} iconName={iconName}/>
 
     </main>
   )

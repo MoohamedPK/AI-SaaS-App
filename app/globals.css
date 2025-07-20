@@ -146,10 +146,15 @@
     @apply border-2 border-black rounded-[22px]
   }
   .rounded-bg {
-    @apply bg-black px-3 py-1 rounded-full text-white
+    @apply bg-zinc-800 px-3 py-1 rounded-full text-white
   }
 
   .center-items {
     @apply flex flex-col justify-center items-center
   }
+
+  .absolute {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+  }
+
 }

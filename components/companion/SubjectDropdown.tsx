@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-import { subjects } from "@/lib/utils"
+import { subjects } from "@/constants/index"
 
 const SubjectDropdown = ({setSelectedSubject}: {setSelectedSubject: (value: string) => void}) => {
   return (
