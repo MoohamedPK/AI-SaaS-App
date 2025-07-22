@@ -14,3 +14,8 @@ export enum CallStatus {
     ACTIVE = "ACTIVE",
     FINISHED = "FINISHED"
 }
+
+export type SavedMessage = {
+  role: string;
+  text: string;
+}

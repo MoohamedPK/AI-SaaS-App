@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api"
 
 export const assistantConfig: CreateAssistantDTO = {
+
   model: {
     provider: "openai",
     model: "chatgpt-4o-latest",
@@ -15,7 +16,7 @@ export const assistantConfig: CreateAssistantDTO = {
     messages: [
       {
         role: "system",
-        content:  `You are a highly knowledgeable tutor teaching a real-time voice session with a student. Your goal is to teach the student about the topic and subject.
+        content:  `You are a highly knowledgeable tutor teaching a real-time voice session with a student. Your goal is to teach the student about the {{topic}} and {{subject}}.
 
                     Tutor Guidelines:
                     Stick to the given topic - {{ topic }} and subject - {{ subject }} and teach the student about it.
@@ -42,6 +43,5 @@ export const assistantConfig: CreateAssistantDTO = {
     model: "nova-3",
     language: "en"
   },
-
 }
 

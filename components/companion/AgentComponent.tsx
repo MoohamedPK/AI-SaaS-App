@@ -1,7 +1,7 @@
 "use client";
 
 import { vapi } from "@/vapi.sdk";
-import { CallStatus } from "@/ts.definitions/types";
+import { CallStatus, SavedMessage } from "@/ts.definitions/types";
 import { useEffect, useRef, useState } from "react";
 import { LucideIcon, Mic, MicOff, Repeat, User } from "lucide-react";
 import { Button } from "../ui/button";
@@ -40,13 +40,15 @@ import { assistantConfig, cn } from "@/lib/utils";
 
 const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?: string}) => {
 
-    const {topic, style, subject, voice} = companion
-    console.log(voice)
+    const {topic, style, subject, name} = companion 
     const {user} = useUser()
     const Icon = iconMap[iconName ?? ""];
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [isSpeaking, setIsSpeaking] = useState<boolean>(true);
     const [isMuted, setIsMuted] = useState<boolean>(false)
+    const [messages, setMessages] = useState<SavedMessage[]>([]);
+
+    console.log(messages.map((messg) => `role: ${messg.role}, transcript: ${messg.text}`, ))
 
     const lottieRef = useRef<LottieRefCurrentProps>(null)
 
@@ -65,7 +67,27 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
 
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
         const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
-        const onMessage = () => {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const onMessage = (message: any) => {
+  if (!message?.transcript) return;
+
+  setMessages((prev) => {
+    const last = prev[prev.length - 1];
+
+    if (last && last.role === message.role) {
+      // Replace the last message
+      const updated = [...prev];
+      updated[updated.length - 1] = {
+        role: message.role,
+        text: message.transcript,
+      };
+      return updated;
+    }
+
+    // Otherwise, add new message
+    return [...prev, { role: message.role, text: message.transcript }];
+  });
+};
         const onError = (error: Error) => console.log("ERROR",error);
         const onSpeakingStart = () => setIsSpeaking(true);
         const onSpeakingEnd = () => setIsSpeaking(false);
@@ -99,6 +121,7 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
 
     const handleDisconnect = () => {
         vapi.stop()
+        setMessages([])
     }
 
     const handleCall = async () => {
@@ -107,7 +130,6 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
 
         const assistantOverrides = {
             variableValues:  {subject, topic, style},
-            
         }
         
         vapi.start(assistantConfig, assistantOverrides);
@@ -150,11 +172,25 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
 
         {/* Translation section */}
 
-        <div className="min-w-full text-center">
-          <p className="text-muted-foreground text-sm italic overflow-y-hidden">Translation appears here...</p>
-          <div className=""/>
+    <div className=" h-[120px] overflow-y-auto center-items">
+        <div className="min-w-full text-center mt-6 relative">
+            {messages.map((message) => {
+              if (message.role === "assistant") {
+                return (
+                  <p key={message.text} className="text-orange-600 font-semibold text-sm italic overflow-y-hidden ">
+                    {name.split(' ')[0].replace(/[.,]/g, " ")} : {message.text}
+                  </p>  
+                )
+              } else {
+                return <p key={message.text} className="text-blue-600 font-semibold  text-sm italic overflow-y-hidden " >
+                    {user?.fullName} : {message.text}
+                  </p>  
+              }
+            })}
+            <div className=""/>
         </div>
-      </div>
+    </div>
+  </div>
 
       {/* Right panel (User controls) */}
       <div className="col-span-1">
