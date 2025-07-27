@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs"
 const page = () => {
     return (
         <div className="center-items">
-            <SignIn signUpUrl="/sign-up"/>
+            <SignIn signUpUrl="/sign-up" />
         </div>
         
     )

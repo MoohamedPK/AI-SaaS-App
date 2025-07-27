@@ -122,6 +122,19 @@
 }
 
 @layer utilities {
+
+  .main-color {
+    color: #630cf9;
+  }
+
+  .accent-color {
+    color: #65419adb;
+  }
+
+  .bg-color {
+    background-color: #0F172A;
+  }
+
   .container {
     @apply px-15 py-6
   }
@@ -135,7 +148,7 @@
   }
 
   .hover-effect {
-    @apply hover:text-orange-500 transition-colors duration-300
+    @apply hover:text-white/70 transition-colors duration-300
   }
 
   .btn-hover {
@@ -160,4 +173,9 @@
     .transcript-fade {
       @apply pointer-events-none absolute bottom-0 left-0 right-0 h-10 max-sm:h-20 bg-gradient-to-t from-background via-background/90 to-transparent z-10;
     }
+
+    .translate-center {
+      @apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+    }
 }
+

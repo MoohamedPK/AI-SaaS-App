@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export async function fetchCompanionById (id: string) {
 
     try {
-        const companion = await prisma.companions.findUnique({
+        const companion = await prisma.companion.findUnique({
             where: {
                 id
             }

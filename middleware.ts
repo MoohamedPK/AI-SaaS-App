@@ -10,5 +10,3 @@ export const config = {
     '/(api|trpc)(.*)',
     ],
 }
-
-// https://more-mite-87.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fprofile

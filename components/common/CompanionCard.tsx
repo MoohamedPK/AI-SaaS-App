@@ -1,11 +1,10 @@
 import {Bookmark, Clock } from "lucide-react"
 import { Button } from "../ui/button"
-import { Companions } from "@prisma/client"
+import { Companion } from "@prisma/client"
 import Link from "next/link"
 import { subjects } from "@/constants/index"
 
-
-const CompanionCard = ({companion}: {companion: Companions}) => {
+const CompanionCard = ({companion}: {companion: Companion}) => {
 
     const subjectColor = subjects.find((subject) => subject.name.toLowerCase() === companion.subject.toLowerCase())
 

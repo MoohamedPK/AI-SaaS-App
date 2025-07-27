@@ -14,7 +14,7 @@ export async function createNewCompanion (formData: companionProps): Promise<{su
 
     console.log('User ID:', userId);
     
-    await prisma.companions.create({
+    await prisma.companion.create({
         data: {
             name: formData.name,
             subject: formData.subject,

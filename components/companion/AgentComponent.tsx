@@ -22,8 +22,9 @@ import {
     Music
     } from "lucide-react";
 import Image from "next/image";
-import { Companions } from "@prisma/client";
+import { Companion } from "@prisma/client";
 import { assistantConfig, cn } from "@/lib/utils";
+import { addCompanionToHistory, updatedSession } from "@/actions/companion/companionHistory/companionHistory";
 
     const iconMap: Record<string, LucideIcon> = {
     Calculator,
@@ -38,17 +39,15 @@ import { assistantConfig, cn } from "@/lib/utils";
     Music,
     };
 
-const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?: string}) => {
+const AgentComponent = ({companion, iconName}: {companion: Companion ,iconName?: string}) => {
 
-    const {topic, style, subject, name} = companion 
+    const {topic, style, subject, name, duration} = companion 
     const {user} = useUser()
     const Icon = iconMap[iconName ?? ""];
     const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
     const [isSpeaking, setIsSpeaking] = useState<boolean>(true);
     const [isMuted, setIsMuted] = useState<boolean>(false)
     const [messages, setMessages] = useState<SavedMessage[]>([]);
-
-    console.log(messages.map((messg) => `role: ${messg.role}, transcript: ${messg.text}`, ))
 
     const lottieRef = useRef<LottieRefCurrentProps>(null)
 
@@ -66,7 +65,11 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
     useEffect(() => {
 
         const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-        const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+        const onCallEnd = () => {
+          setCallStatus(CallStatus.FINISHED)
+
+          addCompanionToHistory(user!.id, companion.id)
+        };
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const onMessage = (message: any) => {
   if (!message?.transcript) return;
@@ -108,7 +111,7 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
             vapi.off("speech-end", onSpeakingEnd);
         }
 
-    }, [])
+    }, [companion.id, user])
 
     const toggleMicrophone = () => {
       if (callStatus === CallStatus.ACTIVE) {
@@ -133,6 +136,13 @@ const AgentComponent = ({companion, iconName}: {companion: Companions ,iconName?
         }
         
         vapi.start(assistantConfig, assistantOverrides);
+
+        const durationInMillsecond = duration * 60 * 1000;
+
+        setTimeout(async () => {
+          vapi.stop()
+          await updatedSession(companion.id, user!.id)
+        }, durationInMillsecond)
     }
 
   return (

@@ -1,6 +1,9 @@
+import { fetchSessionHsitory } from "@/actions/companion/companionHistory/companionHistory"
+import { fetchCompanions } from "@/actions/companion/fetchCompanions"
 import CompletedLessonsTable from "@/components/profile/CompletedLessonsTable"
 import ProfileInfoBox from "@/components/profile/ProfileInfoBox"
 import { auth } from "@clerk/nextjs/server"
+import { Companion, SessionHistory } from "@prisma/client"
 import { User } from "lucide-react"
 import { redirect } from "next/navigation"
 // import Image from "next/image"
@@ -8,8 +11,10 @@ import { redirect } from "next/navigation"
 const Profile = async () => {
   
   const {userId} = await auth();
-
   if (!userId ) redirect("/sign-in")
+
+  const sessions = await fetchCompanions() as Companion[]
+  const completedSessions = await fetchSessionHsitory() as SessionHistory[]
 
   return (
     <div className="container space-y-15">
@@ -29,8 +34,8 @@ const Profile = async () => {
         </div>
         
         <div className="flex-items !space-x-8">
-          <ProfileInfoBox/>
-          <ProfileInfoBox/>
+          <ProfileInfoBox value={completedSessions.length} text="Sessions Completed"/>
+          <ProfileInfoBox value={sessions.length} text="Sesisons Created"/>
         </div>
       </div>
 

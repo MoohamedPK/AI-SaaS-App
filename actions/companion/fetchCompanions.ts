@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function fetchCompanions () {
 
     try {
-        const companions = await prisma.companions.findMany({
+        const companions = await prisma.companion.findMany({
             orderBy:{
                 createdAt: "desc"
             }

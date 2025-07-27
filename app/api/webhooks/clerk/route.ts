@@ -16,6 +16,7 @@ export async function POST(req: Request) {
 
   // 1. Get headers from Clerk
   const headerPayload = headers();
+  console.log(headerPayload)
   const svixId = (await headerPayload).get("svix-id") ?? "";
   const svixTimestamp = (await headerPayload).get("svix-timestamp") ?? "";
   const svixSignature = (await headerPayload).get("svix-signature") ?? "";
@@ -30,7 +31,6 @@ export async function POST(req: Request) {
 
   let evt: WebhookEvent;
 
-
   try {
     // 3. hire svix to check the signature hahaha
     evt = wh.verify(body, {
@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature,
     }) as WebhookEvent;
+
   } catch (err) {
     console.error("Webhook verification failed:", err);
     return new Response("Invalid signature", { status: 400 });
@@ -49,7 +50,6 @@ export async function POST(req: Request) {
 //   console.log("🔔 Webhook event received:", eventType);
 
   if (eventType === "user.created") {
-
     const {id, email_addresses, image_url} = evt.data;
 
     // check if the user is already exist or not because wehbhooks sometime need to retry so it will create the same user
@@ -65,8 +65,6 @@ export async function POST(req: Request) {
     }
 
     createUser(user as User)
-
-    // You can save to DB, send welcome email, etc.
   }
 
   return new Response("Webhook received", { status: 200 });

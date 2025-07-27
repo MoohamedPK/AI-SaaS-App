@@ -1,15 +1,15 @@
 import { CheckCircle } from "lucide-react"
 
 // this compo takes prosp of icon - value - text
-const ProfileInfoBox = () => {
+const ProfileInfoBox = ({value, text}: {value: number, text: string}) => {
   return (
     <div className="border-rounded px-6 py-3">
         <div className="flex-items !space-x-3">
             <CheckCircle size={20} className="text-orange-500"/>
-            <span className="font-bold text-2xl">20</span>
+            <span className="font-bold text-2xl">{value}</span>
         </div>
 
-        <p className="text-neutral-600 font-normal">Lessons Completed</p>
+        <p className="text-neutral-600 font-normal">{text}</p>
     </div>
   )
 }

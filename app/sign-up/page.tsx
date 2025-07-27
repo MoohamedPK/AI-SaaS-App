@@ -3,7 +3,7 @@ import { SignUp } from "@clerk/nextjs"
 const Register = () => {
   return (
     <div className="center-items">
-        <SignUp/>
+        <SignUp routing="hash" signInUrl="/sign-in"/>
     </div>
   )
 }

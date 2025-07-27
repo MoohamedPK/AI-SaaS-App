@@ -6,14 +6,14 @@ import CompanionSearch from "@/components/companion/CompanionSearch"
 import SubjectDropdown from "@/components/companion/SubjectDropdown"
 import { Button } from "@/components/ui/button"
 import CardSkeleton from "@/components/ui/CardSkeleton"
-import { Companions } from "@prisma/client"
+import { Companion } from "@prisma/client"
 import { Plus } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
 const CompanionLibrary = () => {
 
-  const [companions, setCompanions] = useState<Companions[]>()
+  const [companions, setCompanions] = useState<Companion[]>()
   const [searchQuery, setSearchQuery] = useState<string>(""); 
   const [selectedSubject, setSelectedSubject] = useState<string>("")
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -48,10 +48,15 @@ const CompanionLibrary = () => {
 )
 
   return (
-    <main className="container flex flex-col space-y-12">
+    <main className="container flex flex-col space-y-12 bg-color h-screen relative">
 
-      <nav className="flex-between">
-        <h1 className="font-bold text-2xl">Companion Library</h1>
+      <div className="size-full absolute">
+            <p className="neon-circle animate-[wiggle_0.2s_ease-in-out_infinite] bg-violet-400/70 size-[400px] rounded-full blur-[130px]" />
+            <span className="neon-circle  absolute bg-violet-400/70 size-[400px] rounded-full blur-[130px]" />
+        </div>
+
+      <nav className="flex-between z-30 border-b border-white/40 p-8 rounded-sm">
+        <h1 className="font-bold text-white/60 text-2xl">Companion Library</h1>
         <div className="flex-items">
           <CompanionSearch setSearchQuery={setSearchQuery}/>
         </div>
@@ -70,7 +75,7 @@ const CompanionLibrary = () => {
       
         
 
-      <div className="flex-items !space-x-2 font-semibold">
+      <div className="flex-items !space-x-2 font-semibold z-30">
         {searchQuery && (
           <>
             <p>search for </p>
@@ -79,8 +84,8 @@ const CompanionLibrary = () => {
         )}
       </div>
 
-      <section className=" grid grid-cols-3 gap-6">
-        {isLoading ? <CardSkeleton/> :  filteredCompanions?.map((companion) =>
+      <section className=" grid grid-cols-3 gap-6 z-30">
+        {isLoading ? <CardSkeleton/>  :  filteredCompanions?.map((companion) =>
           <CompanionCard key={companion.id} companion={companion}/>)}
       </section>
     </main>
