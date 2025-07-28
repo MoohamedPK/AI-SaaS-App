@@ -24,18 +24,19 @@ const Pricing = () => {
                 trigger: containerRef.current,
                 start: "top 70%",
                 end: "bottom 30%",
-                toggleActions: "play none none none"
+                toggleActions: "play none none "
             }
         });
 
         // Add each card animation to the timeline sequentially
-        cardRef.current.forEach((card, index) => {
+        cardRef.current.forEach((card) => {
             tl.to(card, {
                 opacity: 1,
                 y: 0,
                 duration: 0.8,
-                ease: "power3.out"
-            }, `+=${index === 0 ? 0 : 0.2}`); // Add delay between animations
+                ease: "power3.out",
+                stagger: 0.3
+            });
         });
 
         return () => {
