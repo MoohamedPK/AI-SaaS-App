@@ -19,3 +19,19 @@ export type SavedMessage = {
   role: string;
   text: string;
 }
+
+import {Check, X} from "lucide-react" 
+
+export type PricingPlan = {
+  title: string;
+  price: string;
+  description: string;
+  features: {
+    icon: typeof Check | typeof X;
+    text: string;
+  }[],
+  button: {
+    href: string,
+    text: string
+  }
+};

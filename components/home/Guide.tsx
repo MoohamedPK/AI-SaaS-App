@@ -43,7 +43,7 @@ const Guide = () => {
   }, []);
 
   return (
-    <section id="guide" ref={containerRef} className="h-screen w-full bg-color text-white/60 relative overflow-hidden">
+    <section id="guide" ref={containerRef} className="h-[120dvh] w-full bg-color text-white/60 relative overflow-hidden">
 
     <div className="neon-dot animate-pulse absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-[15rem] bg-purple-600/60 blur-[100px]"/>
 

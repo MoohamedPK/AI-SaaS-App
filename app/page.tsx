@@ -1,6 +1,7 @@
-// import CompanionsCrousel from "@/components/home/CompanionsCrousel";
+import CompanionsCrousel from "@/components/home/CompanionsCrousel";
 import Guide from "@/components/home/Guide";
 import Hero from "@/components/home/Hero";
+import Pricing from "@/components/home/Pricing";
 
 export default function Home() {
   return (
@@ -9,8 +10,9 @@ export default function Home() {
 
       <Guide/>
 
-      {/* <CompanionsCrousel/> */}
+      <CompanionsCrousel/>
 
+      <Pricing/>
     </div>
   );
 }
