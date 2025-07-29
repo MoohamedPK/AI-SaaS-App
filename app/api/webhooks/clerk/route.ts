@@ -16,7 +16,6 @@ export async function POST(req: Request) {
 
   // 1. Get headers from Clerk
   const headerPayload = headers();
-  console.log(headerPayload)
   const svixId = (await headerPayload).get("svix-id") ?? "";
   const svixTimestamp = (await headerPayload).get("svix-timestamp") ?? "";
   const svixSignature = (await headerPayload).get("svix-signature") ?? "";

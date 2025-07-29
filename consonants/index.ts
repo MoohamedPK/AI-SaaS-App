@@ -79,9 +79,9 @@ export const pricing = [
       {icon: Check, text: "Everything in Core"},
       {icon: Check, text: "Unlimited Companions"},
       {icon: Check, text: "Full Performance Dashboards"},
-      {icon: X, text: "Daily Learning Reminders"},
-      {icon: X, text: "Early Access to New Features"},
-      {icon: X, text: "Priority Support"},
+      {icon: Check, text: "Daily Learning Reminders"},
+      {icon: Check, text: "Early Access to New Features"},
+      {icon: Check, text: "Priority Support"},
     ],
     button: {
       href: "/sign-in",

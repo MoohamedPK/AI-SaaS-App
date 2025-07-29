@@ -6,8 +6,12 @@ export async function fetchCompanions () {
 
     try {
         const companions = await prisma.companion.findMany({
-            orderBy:{
+            orderBy: {
                 createdAt: "desc"
+            },
+
+            include: {
+                author: true,
             }
         })
 

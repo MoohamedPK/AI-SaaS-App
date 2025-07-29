@@ -21,10 +21,13 @@ model User {
   image          String
   createdAt      DateTime         @default(now())
   sessionHistory SessionHistory[]
+  companions     Companion[]
 }
 
 model Companion {
   id             String           @id @default(cuid())
+  author         User          @relation(fields: [authorId], references: [id])
+  authorId       String
   name           String
   subject        String
   topic          String

@@ -24,7 +24,7 @@ import {
 import Image from "next/image";
 import { Companion } from "@prisma/client";
 import { assistantConfig, cn } from "@/lib/utils";
-import { addCompanionToHistory, updatedSession } from "@/actions/companion/companionHistory/companionHistory";
+import { addCompanionToHistory, insertSessionToHistory, updatedSession } from "@/actions/companion/companionHistory/companionHistory";
 
     const iconMap: Record<string, LucideIcon> = {
     Calculator,
@@ -137,6 +137,7 @@ const AgentComponent = ({companion, iconName}: {companion: Companion ,iconName?:
         
         vapi.start(assistantConfig, assistantOverrides);
 
+        await insertSessionToHistory(companion.id, user?.id)
         const durationInMillsecond = duration * 60 * 1000;
 
         setTimeout(async () => {

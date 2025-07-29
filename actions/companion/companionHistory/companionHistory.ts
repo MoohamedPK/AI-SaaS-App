@@ -20,7 +20,16 @@ export async function addCompanionToHistory (clerkId: string, companionId: strin
     })
 }
 
-export async function fetchSessionHsitory () {
+export async function fetchSessionHsitory (clerkId: string) {
+
+    const userInDb = await prisma.user.findUnique({
+        where: {
+            clerkId
+        }
+    })
+
+
+    if (!userInDb) throw new Error("user not found");
 
     const sessions = await prisma.sessionHistory.findMany({
         include: {
@@ -28,11 +37,48 @@ export async function fetchSessionHsitory () {
             user: true,
         },
         where: {
-            completed: true
+            completed: true,
+            userId: userInDb.id
         }
     });
 
     return sessions
+}
+
+export async function insertSessionToHistory (companionId: string, clerkId: string | undefined) {
+
+    if (!companionId && !clerkId) throw new Error("Incorrect Infos");
+
+    const userInDb = await prisma.user.findUnique({
+        where: {
+            clerkId ,
+        }
+    })
+
+    if (!userInDb?.id) throw new Error("User not Found")
+
+    try {
+        // Optional: avoid duplicate active sessions
+        const existing = await prisma.sessionHistory.findFirst({
+        where: {
+            companionId,
+            userId: userInDb.id,
+            completed: false,
+        },
+        });
+
+        if (existing) return;
+
+        await prisma.sessionHistory.create({
+            data: {
+                completed: false,
+                companionId,
+                userId: userInDb.id
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 export async function updatedSession (companionId: string, clerkId: string) {
@@ -50,7 +96,6 @@ export async function updatedSession (companionId: string, clerkId: string) {
         where: {
             companionId,
             userId: userInDb?.id,
-            completed: false,
         }
     })
 

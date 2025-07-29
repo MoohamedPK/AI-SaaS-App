@@ -1,5 +1,5 @@
 import { fetchSessionHsitory } from "@/actions/companion/companionHistory/companionHistory"
-import { fetchCompanions } from "@/actions/companion/fetchCompanions"
+import { fetchUserCompanions } from "@/actions/companion/fetchUserCompanions"
 import CompletedLessonsTable from "@/components/profile/CompletedLessonsTable"
 import ProfileInfoBox from "@/components/profile/ProfileInfoBox"
 import { auth } from "@clerk/nextjs/server"
@@ -13,8 +13,8 @@ const Profile = async () => {
   const {userId} = await auth();
   if (!userId ) redirect("/sign-in")
 
-  const sessions = await fetchCompanions() as Companion[]
-  const completedSessions = await fetchSessionHsitory() as SessionHistory[]
+  const sessions = await fetchUserCompanions(userId) as Companion[]
+  const completedSessions = await fetchSessionHsitory(userId) as SessionHistory[]
 
   return (
     <div className="container space-y-15">
@@ -40,7 +40,7 @@ const Profile = async () => {
       </div>
 
 
-      <CompletedLessonsTable/>      
+      <CompletedLessonsTable userId={userId}/>      
     </div>
   )
 }

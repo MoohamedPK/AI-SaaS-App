@@ -1,9 +1,9 @@
 import { fetchSessionHsitory } from "@/actions/companion/companionHistory/companionHistory"
 import { BottleWine } from "lucide-react"
 
-const CompletedLessonsTable = async () => {
+const CompletedLessonsTable = async ({ userId }: { userId: string }) => {
 
-  const completedSessions = await fetchSessionHsitory()
+  const completedSessions = await fetchSessionHsitory(userId)
 
   return (
     <div className="relative overflow-x-auto shadow-md sm:rounded-lg border-rounded !rounded-[30px] py-3 px-6 space-y-6">

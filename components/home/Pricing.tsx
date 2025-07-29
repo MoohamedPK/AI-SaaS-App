@@ -45,8 +45,8 @@ const Pricing = () => {
     }, []);
 
     return (
-        <section className="container min-h-screen w-full flex flex-col text-white/60 py-20 overflow-hidden">
-            <div className="text-center mb-20 space-y-6 max-w-2xl mx-auto">
+        <section className="container h-[130dvh] w-full flex flex-col text-white/60 overflow-hidden">
+            <div className="text-center mb-20 space-y-6 pt-20 max-w-2xl mx-auto">
                 <h1 className="text-4xl font-bold">Choose Your Learning Journey</h1>
                 <p className="text-lg accent-color">
                     Start free, upgrade anytime. Unlock smarter Conversations, deeper insights, 

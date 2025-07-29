@@ -8,16 +8,24 @@ import { revalidatePath } from "next/cache";
 
 export async function createNewCompanion (formData: companionProps): Promise<{success: boolean, message? : string}> {
 
-    const {userId} = await auth()
+    const {userId} = await auth();
 
-    if (!userId) throw new Error("not authenticated");
+    if (!userId) throw new Error("Not Authenticated");
 
-    console.log('User ID:', userId);
+    const userInDb = await prisma.user.findUnique({
+        where: {clerkId: userId}
+    })
+
+    if (!userInDb?.id) throw new Error("User not found");
+
+
+
     
     await prisma.companion.create({
         data: {
             name: formData.name,
             subject: formData.subject,
+            authorId: userInDb.id,
             topic: formData.topic,
             voice: formData.voice,
             style: formData.style.toLowerCase(),
