@@ -19,14 +19,15 @@ model User {
   email          String           @unique
   name           String
   image          String
-  createdAt      DateTime         @default(now())
   sessionHistory SessionHistory[]
   companions     Companion[]
+  bookmarks      Bookmark[]
+  createdAt      DateTime         @default(now())
 }
 
 model Companion {
   id             String           @id @default(cuid())
-  author         User          @relation(fields: [authorId], references: [id])
+  author         User             @relation(fields: [authorId], references: [id])
   authorId       String
   name           String
   subject        String
@@ -36,6 +37,7 @@ model Companion {
   duration       Int
   sessionHistory SessionHistory[]
   createdAt      DateTime         @default(now())
+  Bookmark       Bookmark[]
 }
 
 model SessionHistory {
@@ -46,4 +48,14 @@ model SessionHistory {
   companionId String
   completed   Boolean   @default(false)
   createdAt   DateTime  @default(now())
+}
+
+model Bookmark {
+  id          String    @id @default(uuid())
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  companion   Companion @relation(fields: [companionId], references: [id])
+  companionId String
+  @@unique([userId, companionId])
+  createdAt DateTime @default(now())  
 }

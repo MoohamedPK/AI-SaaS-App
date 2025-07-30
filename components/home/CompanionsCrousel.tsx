@@ -7,7 +7,7 @@ import Image from "next/image";
 
 import gsap from "gsap";
 import {ScrollTrigger} from "gsap/ScrollTrigger";
-import { companions } from "@/consonants";
+import { companions } from "@/constants";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 

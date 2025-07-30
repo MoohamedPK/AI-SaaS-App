@@ -1,6 +1,6 @@
 "use client"
 
-import { pricing } from "@/consonants"
+import { pricing } from "@/constants"
 import PricingCard from "../common/PricingCard"
 import { useEffect, useRef } from "react";
 import gsap from "gsap";

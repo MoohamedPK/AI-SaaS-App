@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "sonner";
+import MouseFollower from "@/components/common/MouseFollower";
 
 const soraFont = Sora({
   subsets: ["latin"],
@@ -24,11 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en" >
       <body
-        className={` ${soraFont.className} bg-color`}
+        className={` ${soraFont.className} bg-color text-white/60 relative`}
         >
         <ClerkProvider>
           <Toaster/>
+          <MouseFollower/>
           <Navbar/>
+        {/* <div className="neon absolute top-0 left-0 size-[45rem] bg-purple-500 blur-[20rem]"/> */}
+          
           {children}
         </ClerkProvider>
       </body>

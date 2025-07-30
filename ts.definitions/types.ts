@@ -20,6 +20,7 @@ export type SavedMessage = {
   text: string;
 }
 
+import { Prisma } from "@prisma/client";
 import {Check, X} from "lucide-react" 
 
 export type PricingPlan = {
@@ -35,3 +36,6 @@ export type PricingPlan = {
     text: string
   }
 };
+
+export type Bookmarks = Prisma.BookmarkGetPayload<{include: {companion: true}}>
+export type CompletedLessons = Prisma.SessionHistoryGetPayload<{include: {user: true, companion: true}}>
