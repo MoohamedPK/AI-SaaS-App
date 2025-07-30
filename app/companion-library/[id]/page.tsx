@@ -27,11 +27,11 @@ const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
               <span className="text-[13px] font-semibold rounded-bg">{companion.subject}</span>
             </div>
 
-            <p className="text-zinc-800/80">Topic: {companion.topic}</p>
+            <p className="accent-color">Topic: {companion.topic}</p>
           </div>
         </div>
 
-        <p className="font-semibold text-lg">{companion.duration} mins</p>
+        <p className="font-semibold accent-color text-lg">{companion.duration} mins</p>
       </section>
 
       <AgentComponent companion= {companion} iconName={iconName}/>

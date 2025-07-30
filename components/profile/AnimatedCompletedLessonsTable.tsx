@@ -5,7 +5,6 @@ import { BottleWine } from "lucide-react";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -95,23 +94,22 @@ const AnimatedCompletedLessonsTable = ({ completedSessions }: { completedSession
                     }}
                     className="transition-all duration-300 hover:bg-white/5 cursor-pointer"
                     >
+                        
                     <td className="px-6 py-4">
-                        <Link href={`/companion-library/${session.companion.id}`}>
-                            <div className="flex items-center gap-4">
-                            <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                                <BottleWine size={20} className="text-purple-400" />
-                            </div>
-                            <div className="space-y-1">
-                                <h2 className="font-medium text-white">
-                                {session.companion.name}
-                                </h2>
-                                <p className="text-sm text-white/60">
-                                Topic: {session.companion.topic}
-                                </p>
-                            </div>
-                            </div>
-                        </Link>
-                        </td>
+                        <div className="flex items-center gap-4">
+                        <div className="p-2 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                            <BottleWine size={20} className="text-purple-400" />
+                        </div>
+                        <div className="space-y-1">
+                            <h2 className="font-medium text-white">
+                            {session.companion.name}
+                            </h2>
+                            <p className="text-sm text-white/60">
+                            Topic: {session.companion.topic}
+                            </p>
+                        </div>
+                        </div>
+                    </td>
                     <td className="px-6 py-4 text-white/80">
                         {session.companion.subject}
                     </td>

@@ -6,251 +6,335 @@ import { useEffect, useRef, useState } from "react";
 import { LucideIcon, Mic, MicOff, Repeat, User } from "lucide-react";
 import { Button } from "../ui/button";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
-import soundwaves from "@/public/Sound Wave Loop.json"
+import soundwaves from "@/public/Sound Wave Loop.json";
 import { useUser } from "@clerk/nextjs";
-
 import {
-    Calculator,
-    Atom,
-    FlaskConical,
-    Dna,
-    BookOpen,
-    ScrollText,
-    Monitor,
-    Globe,
-    Paintbrush,
-    Music
-    } from "lucide-react";
+  Calculator,
+  Atom,
+  FlaskConical,
+  Dna,
+  BookOpen,
+  ScrollText,
+  Monitor,
+  Globe,
+  Paintbrush,
+  Music
+} from "lucide-react";
 import Image from "next/image";
 import { Companion } from "@prisma/client";
 import { assistantConfig, cn } from "@/lib/utils";
 import { addCompanionToHistory, insertSessionToHistory, updatedSession } from "@/actions/companion/companionHistory/companionHistory";
+import gsap from "gsap";
 
-    const iconMap: Record<string, LucideIcon> = {
-    Calculator,
-    Atom,
-    FlaskConical,
-    Dna,
-    BookOpen,
-    ScrollText,
-    Monitor,
-    Globe,
-    Paintbrush,
-    Music,
-    };
-
-const AgentComponent = ({companion, iconName}: {companion: Companion ,iconName?: string}) => {
-
-    const {topic, style, subject, name, duration} = companion 
-    const {user} = useUser()
-    const Icon = iconMap[iconName ?? ""];
-    const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
-    const [isSpeaking, setIsSpeaking] = useState<boolean>(true);
-    const [isMuted, setIsMuted] = useState<boolean>(false)
-    const [messages, setMessages] = useState<SavedMessage[]>([]);
-
-    const lottieRef = useRef<LottieRefCurrentProps>(null)
-
-    useEffect(() => {
-
-        if (lottieRef ) {
-            if (isSpeaking) {
-                lottieRef.current?.play()
-            } else {
-                lottieRef.current?.stop()
-            }
-        }
-    }, [isSpeaking, lottieRef])
-
-    useEffect(() => {
-
-        const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-        const onCallEnd = () => {
-          setCallStatus(CallStatus.FINISHED)
-
-          addCompanionToHistory(user!.id, companion.id)
-        };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const onMessage = (message: any) => {
-  if (!message?.transcript) return;
-
-  setMessages((prev) => {
-    const last = prev[prev.length - 1];
-
-    if (last && last.role === message.role) {
-      // Replace the last message
-      const updated = [...prev];
-      updated[updated.length - 1] = {
-        role: message.role,
-        text: message.transcript,
-      };
-      return updated;
-    }
-
-    // Otherwise, add new message
-    return [...prev, { role: message.role, text: message.transcript }];
-  });
+const iconMap: Record<string, LucideIcon> = {
+  Calculator,
+  Atom,
+  FlaskConical,
+  Dna,
+  BookOpen,
+  ScrollText,
+  Monitor,
+  Globe,
+  Paintbrush,
+  Music,
 };
-        const onError = (error: Error) => console.log("ERROR",error);
-        const onSpeakingStart = () => setIsSpeaking(true);
-        const onSpeakingEnd = () => setIsSpeaking(false);
 
-        vapi.on("call-start", onCallStart);
-        vapi.on("call-end", onCallEnd);
-        vapi.on("message", onMessage);
-        vapi.on("error", onError);
-        vapi.on("speech-start", onSpeakingStart);
-        vapi.on("speech-end", onSpeakingEnd);
-        
-        return () => {
-            vapi.off("call-start", onCallStart);
-            vapi.off("call-end", onCallEnd);
-            vapi.off("message", onMessage);
-            vapi.off("error", onError);
-            vapi.off("speech-start", onSpeakingStart);
-            vapi.off("speech-end", onSpeakingEnd);
-        }
+const AgentComponent = ({ companion, iconName }: { companion: Companion; iconName?: string }) => {
+  const { topic, style, subject, name, duration } = companion;
+  const { user } = useUser();
+  const Icon = iconMap[iconName ?? ""];
+  const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+  const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [messages, setMessages] = useState<SavedMessage[]>([]);
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    }, [companion.id, user])
+  // Animation setup
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Initial animations
+      gsap.from(".control-panel", {
+        x: 50,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power3.out",
+        delay: 0.2
+      });
 
-    const toggleMicrophone = () => {
-      if (callStatus === CallStatus.ACTIVE) {
+      // Pulse animation for connecting state
+      gsap.to(".connecting-pulse", {
+        opacity: 0.6,
+        duration: 1,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        paused: true
+      });
+    }, containerRef);
 
-        const isMuted = vapi.isMuted()
-        vapi.setMuted(!isMuted)
-        setIsMuted(!isMuted)
+    return () => ctx.revert();
+  }, []);
+
+  // Handle speaking animation
+  useEffect(() => {
+    if (lottieRef.current) {
+      if (isSpeaking) {
+        lottieRef.current.play();
+      } else {
+        lottieRef.current.stop();
       }
     }
+  }, [isSpeaking]);
 
-    const handleDisconnect = () => {
-        vapi.stop()
-        setMessages([])
-    }
+  // Auto-scroll messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    const handleCall = async () => {
-      
-        setCallStatus(CallStatus.CONNECTING);
+  // VAPI event handlers
+  useEffect(() => {
+    const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+    const onCallEnd = () => {
+      setCallStatus(CallStatus.FINISHED);
+      addCompanionToHistory(user!.id, companion.id);
+    };
 
-        const assistantOverrides = {
-            variableValues:  {subject, topic, style},
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onMessage = (message: any) => {
+      if (!message?.transcript) return;
+
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+
+        if (last && last.role === message.role) {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: message.role,
+            text: message.transcript,
+          };
+          return updated;
         }
-        
-        vapi.start(assistantConfig, assistantOverrides);
 
-        await insertSessionToHistory(companion.id, user?.id)
-        const durationInMillsecond = duration * 60 * 1000;
+        return [...prev, { role: message.role, text: message.transcript }];
+      });
+    };
 
-        setTimeout(async () => {
-          vapi.stop()
-          await updatedSession(companion.id, user!.id)
-        }, durationInMillsecond)
+    const onError = (error: Error) => console.log("ERROR", error);
+    const onSpeakingStart = () => setIsSpeaking(true);
+    const onSpeakingEnd = () => setIsSpeaking(false);
+
+    vapi.on("call-start", onCallStart);
+    vapi.on("call-end", onCallEnd);
+    vapi.on("message", onMessage);
+    vapi.on("error", onError);
+    vapi.on("speech-start", onSpeakingStart);
+    vapi.on("speech-end", onSpeakingEnd);
+    
+    return () => {
+      vapi.off("call-start", onCallStart);
+      vapi.off("call-end", onCallEnd);
+      vapi.off("message", onMessage);
+      vapi.off("error", onError);
+      vapi.off("speech-start", onSpeakingStart);
+      vapi.off("speech-end", onSpeakingEnd);
+    };
+  }, [companion.id, user]);
+
+  const toggleMicrophone = () => {
+    if (callStatus === CallStatus.ACTIVE) {
+      const isMuted = vapi.isMuted();
+      vapi.setMuted(!isMuted);
+      setIsMuted(!isMuted);
     }
+  };
+
+  const handleDisconnect = () => {
+    vapi.stop();
+    setMessages([]);
+  };
+
+  const handleCall = async () => {
+    setCallStatus(CallStatus.CONNECTING);
+    gsap.globalTimeline.getChildren().forEach(t => t.kill());
+    gsap.to(".connecting-pulse", { opacity: 0.6, duration: 1, repeat: -1, yoyo: true });
+
+    const assistantOverrides = {
+      variableValues: { subject, topic, style },
+    };
+    
+    vapi.start(assistantConfig, assistantOverrides);
+    await insertSessionToHistory(companion.id, user?.id);
+    
+    const durationInMillisecond = duration * 60 * 1000;
+    setTimeout(async () => {
+      vapi.stop();
+      await updatedSession(companion.id, user!.id);
+    }, durationInMillisecond);
+  };
 
   return (
-    <section className="grid grid-cols-4 gap-6">
-      {/* Left section */}
-      <div className="col-span-3 space-y-8 relative">
+    <section 
+      className="grid grid-cols-1 lg:grid-cols-4 gap-6 p-6" 
+      ref={containerRef}
+    >
+      {/* Left section - Main content */}
+      <div className="lg:col-span-3 space-y-6 relative rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-lg border border-white/10 shadow-lg p-6">
+        {/* Status area with floating gradient */}
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-purple-600/20 rounded-full blur-[80px] -z-10"></div>
+        
         {/* Call State Display */}
         <div
           className={cn(
-            "border-rounded !border-orange-500 p-8 flex flex-col justify-center items-center min-h-full transition-opacity duration-300",
+            "flex flex-col justify-center items-center min-h-[300px] rounded-xl transition-all duration-500 relative overflow-hidden",
             callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED
-              ? "opacity-100"
-              : "opacity-0",
-            callStatus === CallStatus.CONNECTING && "opacity-100 animate-pulse"
+              ? "opacity-100 bg-gradient-to-br from-gray-900/80 to-gray-800/80"
+              : "opacity-0 h-0",
+            callStatus === CallStatus.CONNECTING && 
+              "opacity-100 bg-gradient-to-br from-blue-900/50 to-purple-900/50 connecting-pulse"
           )}
         >
-          {Icon && <Icon size={62} className="text-primary" />}
-          <p className="mt-4 text-center text-sm text-zinc-700">
-            Waiting for the companion to speak...
+          {Icon && (
+            <div className="p-4 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full shadow-lg mb-6">
+              <Icon size={48} className="text-white" />
+            </div>
+          )}
+          <p className="text-xl font-medium text-white/90 mt-4 text-center">
+            {callStatus === CallStatus.CONNECTING 
+              ? "Connecting to your AI companion..." 
+              : "Ready to start your session"}
           </p>
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-[size:40px_40px] opacity-10 -z-10"></div>
         </div>
 
-        {/* Soundwave animation (active when speaking) */}
+        {/* Soundwave animation */}
         <div
           className={cn(
-            "transition-all duration-200 size-60 absolute",
-            callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0"
+            "transition-all duration-300 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64",
+            callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0 pointer-events-none"
           )}
         >
           <Lottie
             lottieRef={lottieRef}
             animationData={soundwaves}
-            autoPlay={false}
-            className="bg-black w-full"
+            loop={true}
+            className="w-full h-full"
           />
         </div>
 
-        {/* Translation section */}
-
-    <div className=" h-[120px] overflow-y-auto center-items">
-        <div className="min-w-full text-center mt-6 relative">
-            {messages.map((message) => {
-              if (message.role === "assistant") {
-                return (
-                  <p key={message.text} className="text-orange-600 font-semibold text-sm italic overflow-y-hidden ">
-                    {name.split(' ')[0].replace(/[.,]/g, " ")} : {message.text}
-                  </p>  
-                )
-              } else {
-                return <p key={message.text} className="text-blue-600 font-semibold  text-sm italic overflow-y-hidden " >
-                    {user?.fullName} : {message.text}
-                  </p>  
-              }
-            })}
-            <div className=""/>
+        {/* Messages display */}
+        <div className="h-[250px] overflow-y-auto p-4 rounded-xl bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-sm border border-white/10 custom-scrollbar">
+          <div className="space-y-3">
+            {messages.map((message, index) => (
+              <div
+                key={`${index}-${message.text.substring(0, 10)}`}
+                className={cn(
+                  "p-4 rounded-xl max-w-[80%] backdrop-blur-sm",
+                  message.role === "assistant"
+                    ? "bg-gradient-to-r from-purple-600/30 to-purple-800/30 border border-purple-500/20 mr-auto"
+                    : "bg-gradient-to-r from-blue-600/30 to-blue-800/30 border border-blue-500/20 ml-auto"
+                )}
+              >
+                <p className="font-semibold text-white/90">
+                  {message.role === "assistant" 
+                    ? `${name.split(' ')[0].replace(/[.,]/g, " ")}:` 
+                    : `${user?.fullName}:`}
+                </p>
+                <p className="text-white/80 mt-1">{message.text}</p>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
-    </div>
-  </div>
+      </div>
 
-      {/* Right panel (User controls) */}
-      <div className="col-span-1">
-        <div className="space-y-5">
-          {/* User info */}
-          <div className="center-items p-8 border-rounded border">
+      {/* Right panel - Controls */}
+      <div className="lg:col-span-1 control-panel">
+        <div className="space-y-6 rounded-2xl bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-lg border border-white/10 shadow-lg p-6">
+          {/* User profile */}
+          <div className="flex flex-col items-center p-6 rounded-xl bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-white/10">
             {user?.hasImage ? (
-                <Image src={user.imageUrl} width={100} height={100} className="rounded-xl" alt="user img"/>
+              <div className="relative">
+                <Image 
+                  src={user.imageUrl} 
+                  width={100} 
+                  height={100} 
+                  className="rounded-full border-4 border-white/20 shadow-lg"
+                  alt="User profile"
+                />
+                <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 opacity-70 -z-10 blur-md"></div>
+              </div>
             ) : (
-                <User size={50} className="bg-neutral-400 rounded-full"/>
-            ) }
-            <p className="text-lg font-bold mt-2">{user?.fullName}</p>
+              <div className="p-4 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 shadow-lg">
+                <User size={40} className="text-white" />
+              </div>
+            )}
+            <p className="text-xl font-bold mt-4 text-white">
+              {user?.fullName}
+            </p>
+            <p className="text-sm text-white/60 mt-1">
+              {subject} Learner
+            </p>
           </div>
 
           {/* Control buttons */}
           <div className="grid grid-cols-2 gap-3">
-                        <Button onClick={toggleMicrophone}  className={cn("mic border-rounded center-items py-3 min-h-full cursor-pointer", callStatus !== CallStatus.ACTIVE ? "cursor-not-allowed" : "") }>
-                            {isMuted ? (
-                                <>
-                                    <MicOff size={28}/>
-                                    <p>Turn On mic</p>
-                                </>
-                            ) : (
-                                <>
-                                    <Mic size={28}/>
-                                    <p>Turn Off mic</p>
-                                </>
-                            )}
-                        </Button>
+            <Button
+              onClick={toggleMicrophone}
+              disabled={callStatus !== CallStatus.ACTIVE}
+              className={cn(
+                "flex flex-col items-center justify-center py-4 h-full rounded-xl transition-all border",
+                callStatus !== CallStatus.ACTIVE 
+                  ? "opacity-50 cursor-not-allowed bg-gray-800/50 border-gray-700" 
+                  : isMuted 
+                    ? "bg-gradient-to-br from-red-900/50 to-red-800/50 border-red-700 hover:from-red-900/60 hover:to-red-800/60"
+                    : "bg-gradient-to-br from-gray-800/50 to-gray-700/50 border-gray-600 hover:from-gray-800/60 hover:to-gray-700/60"
+              )}
+            >
+              {isMuted ? (
+                <>
+                  <MicOff size={24} className="mb-1 text-red-400" />
+                  <span className="text-xs text-white/80">Unmute</span>
+                </>
+              ) : (
+                <>
+                  <Mic size={24} className="mb-1 text-blue-400" />
+                  <span className="text-xs text-white/80">Mute</span>
+                </>
+              )}
+            </Button>
 
-                        <Button className="repeat border-rounded center-items py-3 h-full cursor-pointer">
-                            <Repeat size={28}/>
-                            <p>Repeat</p>
-                        </Button>
-                    </div>
+            <Button
+              className="flex flex-col items-center justify-center py-4 h-full rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-700/50 border border-gray-600 hover:from-gray-800/60 hover:to-gray-700/60"
+            >
+              <Repeat size={24} className="mb-1 text-purple-400" />
+              <span className="text-xs text-white/80">Repeat</span>
+            </Button>
+          </div>
 
-          {/* End lesson */}
+          {/* Main action button */}
           <Button
-
             onClick={callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall}
-            className={cn("w-full bg-zinc-800 hover:opacity-95 text-white cursor-pointer", callStatus === CallStatus.ACTIVE ? "bg-red-700" : "bg-zinc-800", callStatus === CallStatus.CONNECTING ? "animate-pulse bg-green-700" : "")}>
-            {callStatus === CallStatus.ACTIVE ? "End Session" : callStatus === CallStatus.CONNECTING ? "Connecting ..." : "Start Session"}
+            className={cn(
+              "w-full py-5 text-white rounded-xl transition-all duration-300 shadow-lg",
+              callStatus === CallStatus.ACTIVE
+                ? "bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600"
+                : callStatus === CallStatus.CONNECTING
+                ? "bg-gradient-to-r from-blue-600 to-blue-500 animate-pulse"
+                : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            )}
+          >
+            {callStatus === CallStatus.ACTIVE
+              ? "End Session"
+              : callStatus === CallStatus.CONNECTING
+              ? "Connecting..."
+              : "Start Session"}
           </Button>
         </div>
       </div>
-
-
     </section>
-  )
-}
+  );
+};
 
-export default AgentComponent
+export default AgentComponent;
