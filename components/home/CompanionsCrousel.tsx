@@ -55,6 +55,12 @@ const CompanionsCarousel = () => {
         }
     }, [activeIndex]);
 
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(window.innerWidth < 768);
+    }, []);
+
     return (
         <section className="min-h-screen w-full flex flex-col text-white/70 py-12 relative overflow-hidden">
         {/* Title */}
@@ -104,7 +110,7 @@ const CompanionsCarousel = () => {
                         ? "z-20 scale-90 opacity-80 -translate-x-4 md:-translate-x-10"
                         : "z-10 scale-80 opacity-60 -translate-x-6 md:-translate-x-20"
                     } 
-                    ${window.innerWidth < 768 ? "relative mb-6 w-[90%]" : "absolute"}`}
+                    ${isMobile ? "relative mb-6 w-[90%]" : "absolute"}`}
                     >
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative text-center md:text-left">
