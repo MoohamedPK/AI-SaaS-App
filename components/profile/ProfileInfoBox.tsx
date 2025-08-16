@@ -10,7 +10,7 @@ const ProfileInfoBox = ({ value, text }: { value: number; text: string }) => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Initial animation
+      // Fade-in and slide-up animation
       gsap.from(boxRef.current, {
         opacity: 0,
         y: 20,
@@ -18,36 +18,35 @@ const ProfileInfoBox = ({ value, text }: { value: number; text: string }) => {
         ease: "back.out(1.2)"
       });
 
-      // Counter animation for the value
-      gsap.from(valueRef.current, {
-        innerText: 0,
-        duration: 1.5,
-        snap: { innerText: 1 },
-        ease: "power2.out"
-      });
+      // Counter animation for the numeric value
+      gsap.fromTo(
+        valueRef.current,
+        { innerText: 0 },
+        {
+          innerText: value,
+          duration: 1.5,
+          snap: { innerText: 1 },
+          ease: "power2.out"
+        }
+      );
 
-      // Hover animation
-      gsap.to(boxRef.current, {
-        scale: 1,
-        background: "rgba(255, 255, 255, 0.03)",
-        duration: 0.3
-      });
-
-      boxRef.current?.addEventListener("mouseenter", () => {
+      // Hover scale and background effect
+      const hoverIn = () =>
         gsap.to(boxRef.current, {
           scale: 1.03,
           background: "rgba(255, 255, 255, 0.08)",
           duration: 0.3
         });
-      });
 
-      boxRef.current?.addEventListener("mouseleave", () => {
+      const hoverOut = () =>
         gsap.to(boxRef.current, {
           scale: 1,
           background: "rgba(255, 255, 255, 0.03)",
           duration: 0.3
         });
-      });
+
+      boxRef.current?.addEventListener("mouseenter", hoverIn);
+      boxRef.current?.addEventListener("mouseleave", hoverOut);
     }, boxRef);
 
     return () => ctx.revert();
@@ -56,16 +55,17 @@ const ProfileInfoBox = ({ value, text }: { value: number; text: string }) => {
   return (
     <div
       ref={boxRef}
-      className="relative rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-orange-500/10"
+      className="relative w-full md:w-fit rounded-xl border border-white/10 bg-white/5 backdrop-blur-md p-6 transition-all duration-300 overflow-hidden hover:shadow-lg hover:shadow-orange-500/20"
     >
-      {/* Gradient overlay */}
+      {/* Gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 -z-10" />
 
+      {/* Value and icon */}
       <div className="flex items-center gap-4 mb-3">
         <div className="p-2 rounded-lg bg-orange-500/10 border border-orange-500/20">
           <CheckCircle size={20} className="text-orange-400" />
         </div>
-        <span 
+        <span
           ref={valueRef}
           className="font-bold text-3xl bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-400"
         >
@@ -75,7 +75,7 @@ const ProfileInfoBox = ({ value, text }: { value: number; text: string }) => {
 
       <p className="text-sm font-medium text-white/80">{text}</p>
 
-      {/* Glow effect */}
+      {/* Subtle glow effect */}
       <div className="absolute -bottom-4 -right-4 w-16 h-16 rounded-full bg-orange-500/10 blur-xl pointer-events-none" />
     </div>
   );
