@@ -19,6 +19,7 @@ import Loading from "../ui/Loading";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
 import { subjects, voices } from "@/constants/index";
+import { ChevronRight } from "lucide-react";
 
 const CompanionForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,7 +53,7 @@ const CompanionForm = () => {
           type="text"
           required
           placeholder="Enter the companion name - ex: Calculus King"
-          className="border border-black"
+          className="border border-violet-800"
           {...register("name")}
         />
       </div>
@@ -63,11 +64,11 @@ const CompanionForm = () => {
         control={control}
         render={({ field }) => (
           <Select required onValueChange={field.onChange} value={field.value}>
-            <SelectTrigger className="w-full border-black text-black">
+            <SelectTrigger className="w-full border-violet-800 text-white">
               <SelectValue placeholder="Select Subject" />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
+              <SelectGroup className="bg-transparent">
                 <SelectLabel>Subjects</SelectLabel>
                 <SelectItem value="all">All</SelectItem>
                 {subjects.map((subject) => (
@@ -92,7 +93,7 @@ const CompanionForm = () => {
           type="text"
           required
           placeholder="Enter the topic you want to learn - ex: Derivatives"
-          className="border border-black"
+          className="border border-violet-800"
           {...register("topic")}
         />
       </div>
@@ -103,7 +104,7 @@ const CompanionForm = () => {
         control={control}
         render={({ field }) => (
           <Select required onValueChange={field.onChange} value={field.value}>
-            <SelectTrigger className="w-full border-black text-black">
+            <SelectTrigger className="w-full border-violet-800 text-white">
               <SelectValue placeholder="Select Style" />
             </SelectTrigger>
             <SelectContent>
@@ -122,7 +123,7 @@ const CompanionForm = () => {
         control={control}
         render={({ field }) => (
           <Select required onValueChange={field.onChange} value={field.value}>
-            <SelectTrigger className="w-full border-black text-black">
+            <SelectTrigger className="w-full border-violet-800 text-white">
               <SelectValue placeholder="Select Voice" />
             </SelectTrigger>
             <SelectContent>
@@ -142,19 +143,25 @@ const CompanionForm = () => {
           required
           type="number"
           placeholder="Enter your learning duration - ex: 20 mins"
-          className="border border-black"
+          className="border border-violet-800"
           {...register("duration")}
         />
       </div>
 
       {/* Submit Button */}
-      <Button
+
+        <Button
         type="submit"
-        className="bg-orange-500 w-full cursor-pointer transition-all duration-300"
-        disabled={isLoading}
-      >
-        {isLoading ? <Loading /> : "Build Companion"}
-      </Button>
+          disabled={isLoading}
+          variant="ghost"
+          className="cursor-pointer w-full bg-white/10 hover:bg-white/20 border border-white/10
+            text-white backdrop-blur-md transition-all duration-300
+            hover:border-purple-600/50 hover:text-white
+            group-hover:shadow-lg group-hover:shadow-purple-600/20 flex items-center justify-between"
+        >
+          {isLoading ? <Loading /> : "Build Companion"}
+          <ChevronRight />
+        </Button>
     </form>
   );
 };

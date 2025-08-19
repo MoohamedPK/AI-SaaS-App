@@ -15,7 +15,7 @@ const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
   const color = subjectData?.color || "";
 
   return (
-    <main className="container space-y-12">
+    <main className="md:px-15 md:py-6 mx-6 md:mx-0 space-y-12">
       {/* <BackButton/> */}
       <section className="rounded-lg px-7 py-10 flex-between shadow-2xl" style={{backgroundColor: color}}>
         <div className="flex-items ">

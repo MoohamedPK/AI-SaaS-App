@@ -55,7 +55,7 @@ const Hero = () => {
         </p>
 
         <div className='flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center'>
-          <Link href={'/subscription'}>
+          <Link href={'#subscription'}>
             <Button className="bg-zinc-900 shadow-2xl shadow-violet-400/70 text-white/80 cursor-pointer btn-hover w-full sm:w-auto">
               Get Started
             </Button>

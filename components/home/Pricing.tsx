@@ -43,7 +43,7 @@ const Pricing = () => {
   }, []);
 
   return (
-    <section className="container w-full flex flex-col text-white/60 overflow-hidden md:h-[130dvh]">
+    <section id="subscription" className="container w-full flex flex-col text-white/60 overflow-hidden md:h-[130dvh]">
       {/* Heading */}
       <div className="text-center mb-20 space-y-6 pt-20 max-w-2xl mx-auto">
         <h1 className="text-4xl font-bold">Choose Your Learning Journey</h1>
