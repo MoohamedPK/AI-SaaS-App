@@ -1,22 +1,24 @@
 # Freelance Boost AI
 
-Freelance Boost AI is a modern web application built with Next.js, designed to help users interact with and manage AI-powered companions. The platform features user authentication, a searchable companion library, user profiles, and subscription management.
+AI Learning Agent is a Next.js web app that lets users discover and interact with AI-powered learning companions. Users can browse a library of companions, view details, start guided sessions, track progress, and manage personal bookmarks and history — all within a clean, modern interface.
 
 ## Features
 
-- **Companion Library**: Browse, search, and filter a collection of AI companions by name, topic, or subject. Add new companions as needed.
-- **User Authentication**: Secure sign-up and sign-in powered by Clerk.
-- **User Profile**: View your profile information and completed lessons.
-- **Subscription Management**: (Feature present; expand as needed for premium features.)
-- **Modern UI**: Built with reusable React components and styled using Tailwind CSS.
+- **Companion Library**: Browse, search, and filter AI companions by name, topic, or subject.
+- **Create & Manage Companions**: Add new companions with custom subjects and prompts.
+- **Guided Sessions**: Chat with companions through an integrated agent interface.
+- **Bookmarks**: Save and manage favorite sessions for quick access.
+- **Progress Tracking**: View completed lessons and companion interaction history.
+- **User Accounts**: Secure authentication with Clerk for sign-in and profile pages.
+- **Modern UI**: Built with reusable React components and Tailwind CSS.
 
 ## Tech Stack
 
 - **Framework**: [Next.js](https://nextjs.org/) (App Router)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) (via [Prisma ORM](https://www.prisma.io/))
-- **Authentication**: [Clerk](https://clerk.com/)
-- **Component Libraries**: Radix UI, Lucide React, Lottie React
+- **Database**: [PostgreSQL](https://www.postgresql.org/) via [Prisma](https://www.prisma.io/)
+- **Auth**: [Clerk](https://clerk.com/)
+- **UI/UX**: Radix UI, Lucide React, Lottie React
 
 ## Getting Started
 
@@ -36,7 +38,11 @@ Freelance Boost AI is a modern web application built with Next.js, designed to h
    bun install
    ```
 3. **Set up environment variables:**
-   - Copy `.env.example` to `.env.local` and fill in the required values (e.g., `DATABASE_URL` for PostgreSQL, Clerk keys).
+   Create a `.env.local` file with values such as:
+   - `DATABASE_URL` (PostgreSQL connection string)
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+   - Any webhook secrets you use for Clerk
 4. **Run database migrations:**
    ```bash
    npx prisma migrate dev
@@ -51,26 +57,28 @@ Freelance Boost AI is a modern web application built with Next.js, designed to h
    # or
    bun dev
    ```
-6. **Open [http://localhost:3000](http://localhost:3000) in your browser.**
+6. **Open** http://localhost:3000 **in your browser.**
 
 ## Project Structure
 
-- `app/` - Main application pages and routes
-- `components/` - Reusable UI components
-- `prisma/` - Prisma schema and database migrations
-- `constants/`, `lib/`, `actions/` - Utilities, constants, and server actions
+- `app/` – Application routes and pages (App Router)
+- `components/` – Reusable UI components
+- `actions/` – Server actions for data fetching and mutations
+- `lib/` – Utilities and client/server helpers
+- `constants/` – App-wide constants
+- `prisma/` – Prisma schema and database migrations
 
 ## Scripts
 
-- `dev` - Start the development server
-- `build` - Build the application for production
-- `start` - Start the production server
-- `lint` - Run ESLint
+- `dev` – Start the development server
+- `build` – Build for production
+- `start` – Start the production server
+- `lint` – Run ESLint
+
+## Contributing
+
+Contributions are welcome! Please open an issue or pull request with improvements or bug fixes.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
----
-
-Feel free to contribute or open issues to help improve the project!

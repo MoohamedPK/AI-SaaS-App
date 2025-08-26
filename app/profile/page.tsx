@@ -7,8 +7,21 @@ import UserProfile from "@/components/profile/UserProfile";
 import BookmarkSkeleton from "@/components/ui/BookmarkSkeleton";
 import { auth } from "@clerk/nextjs/server";
 import { Companion, SessionHistory } from "@prisma/client";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+
+
+export const metadata: Metadata = {
+  title: "User Profile | AI Learning Agent",
+  description: "View and manage your profile on Freelance Boost AI.",
+  openGraph: {
+    title: "User Profile | Freelance Boost AI",
+    description: "View and manage your profile on Freelance Boost AI.",
+    url: "https://learningagent.vercel.app/profile",
+    images: ["/profile-preview.png"],
+  },
+}
 
 const Profile = async () => {
   const { userId } = await auth();

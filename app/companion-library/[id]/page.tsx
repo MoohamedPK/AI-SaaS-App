@@ -3,6 +3,77 @@ import { fetchCompanionById } from "@/actions/companion/fetchCompanionById"
 import AgentComponent from "@/components/companion/AgentComponent"
 import { subjects } from "@/constants/index"
 import { Companion } from "@prisma/client"
+import { Metadata } from "next"
+
+export const generateMetadata = async ({params}: {params: Promise<{id: string}>}): Promise<Metadata> => {
+  const companionId = ((await params).id)
+  const companion = await fetchCompanionById(companionId) as Companion
+
+  if (!companion) {
+    return {
+      title: "Companion Not Found | Freelance Boost AI",
+      description: "The requested AI companion could not be found."
+    }
+  }
+
+
+
+  return {
+    title: `${companion.name} - ${companion.subject} | Freelance Boost AI`,
+    description: `Learn ${companion.topic} with ${companion.name}, your AI companion for ${companion.subject}. Interactive ${companion.duration}-minute session designed to boost your learning and productivity.`,
+    keywords: [
+      companion.name,
+      companion.subject,
+      companion.topic,
+      "AI companion",
+      "learning assistant",
+      "interactive learning",
+      "AI tutor",
+      "freelance tools",
+      "productivity AI"
+    ],
+    openGraph: {
+      title: `${companion.name} - ${companion.subject} | Freelance Boost AI`,
+      description: `Learn ${companion.topic} with ${companion.name}, your AI companion for ${companion.subject}. Interactive ${companion.duration}-minute session designed to boost your learning and productivity.`,
+      type: "website",
+      url: `/companion-library/${companionId}`,
+      siteName: "Freelance Boost AI",
+      images: [
+        {
+          url: "/logo.svg",
+          width: 1200,
+          height: 630,
+          alt: `${companion.name} - ${companion.subject} AI Companion`
+        }
+      ]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${companion.name} - ${companion.subject} | Freelance Boost AI`,
+      description: `Learn ${companion.topic} with ${companion.name}, your AI companion for ${companion.subject}.`,
+      images: ["/logo.svg"]
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1
+      }
+    },
+    alternates: {
+      canonical: `/companion-library/${companionId}`
+    },
+    other: {
+      "subject": companion.subject,
+      "topic": companion.topic,
+      "duration": `${companion.duration} minutes`
+    }
+  }
+}
 
 const CompanionSession = async ({params}: {params: Promise<{id: string}>}) => {
 
